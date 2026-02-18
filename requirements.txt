@@ -1,9 +1,6 @@
 pandas
 numpy
 scikit-learn
-matplotlib
-seaborn
-joblib
-openpyxl
 plotly
-streamlit
+streamlit>=1.32.0
+openpyxl
