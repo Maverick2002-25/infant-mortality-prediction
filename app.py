@@ -33,8 +33,24 @@ st.markdown("""
 }
 .header-box h1 { margin:0; font-size:2rem; }
 .header-box p  { margin:6px 0 0; opacity:.9; }
-.result-high { background:#FFF3E0; border-left:6px solid #FF9800; border-radius:10px; padding:18px; line-height:2; }
-.result-low  { background:#E8F5E9; border-left:6px solid #4CAF50; border-radius:10px; padding:18px; line-height:2; }
+.result-high {
+    background: #E65100 !important;
+    border-left: 6px solid #FF6D00;
+    border-radius: 10px;
+    padding: 20px 24px;
+    line-height: 2;
+    color: #FFFFFF !important;
+}
+.result-high * { color: #FFFFFF !important; }
+.result-low {
+    background: #1B5E20 !important;
+    border-left: 6px solid #00C853;
+    border-radius: 10px;
+    padding: 20px 24px;
+    line-height: 2;
+    color: #FFFFFF !important;
+}
+.result-low * { color: #FFFFFF !important; }
 .sec { font-size:1.15rem; font-weight:700; color:#1B5E20;
        border-bottom:2px solid #4CAF50; padding-bottom:4px; margin:16px 0 10px; }
 </style>
@@ -208,14 +224,35 @@ with t1:
         icon     = "🔴" if pred >= 30 else "🟢"
         diff     = pred - mean_v
         diff_str = f"+{diff:.1f}" if diff >= 0 else f"{diff:.1f}"
-        best_badge = " &nbsp;<span style='background:#2E7D32;color:white;border-radius:6px;padding:2px 8px;font-size:0.8rem'>🏆 Best Model</span>" if model_choice == BEST_MODEL else ""
+        best_badge = " &nbsp;<span style='background:rgba(255,255,255,0.25);color:#FFFFFF;border-radius:6px;padding:3px 10px;font-size:0.85rem;font-weight:700;border:1px solid rgba(255,255,255,0.5)'>🏆 Best Model</span>" if model_choice == BEST_MODEL else ""
 
+        bg_color = "#B71C1C" if pred >= 30 else "#1B5E20"
+        border_color = "#FF5252" if pred >= 30 else "#69F0AE"
         st.markdown(f"""
-        <div class="{box_cls}">
-          <span style="font-size:1.7rem;font-weight:800">{icon} {pred:.1f} per 1,000 live births</span><br>
-          <b>Risk Level:</b> {risk} &emsp;(threshold ≥ 30)<br>
-          <b>vs. National Mean ({mean_v:.1f}):</b> {diff_str}<br>
-          <b>Model used:</b> {model_choice}{best_badge}
+        <div style="
+            background: {bg_color};
+            border-left: 7px solid {border_color};
+            border-radius: 12px;
+            padding: 22px 26px;
+            line-height: 2.2;
+            color: #FFFFFF;
+            margin-bottom: 12px;
+        ">
+          <div style="font-size:2rem; font-weight:900; color:#FFFFFF; margin-bottom:6px;">
+            {icon} {pred:.1f} <span style="font-size:1.1rem; font-weight:600;">per 1,000 live births</span>
+          </div>
+          <div style="font-size:1rem; color:#FFFFFF;">
+            <span style="opacity:0.85;">Risk Level:</span>
+            <b style="color:#FFFFFF; font-size:1.1rem;">&nbsp;{risk}</b>
+            <span style="opacity:0.75; font-size:0.9rem;">&nbsp;(threshold ≥ 30)</span>
+          </div>
+          <div style="font-size:1rem; color:#FFFFFF;">
+            <span style="opacity:0.85;">vs. National Mean ({mean_v:.1f}):</span>
+            <b style="color:#FFFFFF;">&nbsp;{diff_str} per 1,000</b>
+          </div>
+          <div style="font-size:0.95rem; color:#FFFFFF; opacity:0.9;">
+            Model: {model_choice}{best_badge}
+          </div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -239,15 +276,6 @@ with t1:
         ))
         fig_g.update_layout(height=270, margin=dict(l=20, r=20, t=40, b=10))
         st.plotly_chart(fig_g, use_container_width=True)
-
-        st.markdown("**Both models side-by-side:**")
-        st.dataframe(pd.DataFrame({
-            "Model":     [f"Linear Regression {'🏆' if BEST_MODEL=='Linear Regression' else ''}",
-                          f"Decision Tree Regressor {'🏆' if BEST_MODEL=='Decision Tree Regressor' else ''}"],
-            "Predicted": [f"{lr_p:.2f}", f"{dt_p:.2f}"],
-            "Risk":      ["HIGH 🔴" if lr_p >= 30 else "LOW 🟢",
-                          "HIGH 🔴" if dt_p >= 30 else "LOW 🟢"]
-        }), hide_index=True, use_container_width=True)
 
 # ════════════════════════════════════════════════════
 # TAB 2 – Model Performance
